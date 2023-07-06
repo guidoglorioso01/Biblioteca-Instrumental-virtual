@@ -67,7 +67,7 @@ class Mediciones():
     
     def calculo_Capacitor(self, valor_r, tiempo, tension_r, tension_gen, modo = "TIEMPO"):
         '''
-        Calculo de capacitor por distintos metodos
+        Calculo de capacitor en un circuito RC por distintos metodos
         
         Parameters
         ----------
@@ -130,6 +130,14 @@ class Mediciones():
             valor_cap = 1/(2 * np.pi * frecuencia_Señal *xc) #valor calculado
 
         elif modo == "POT":     # Falta implementar
+            #variables
+            #valor_r, tiempo, tension_r, tension_gen
+            Vp= self.Vp(tiempo, tension_gen)
+            Ip= self.Vp(tiempo, tension_r)
+            
+            pot_aparente= Vp * Ip/ np.sqrt(2)
+            
+            
             valor_cap = 0
             pass
         elif modo == "LISSAJ":  # Falta implementar
