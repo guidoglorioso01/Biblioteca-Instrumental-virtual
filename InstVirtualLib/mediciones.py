@@ -34,6 +34,10 @@ class Mediciones():
     def Vmed(self, tiempo, tension):
         """ retorna el valor medio de modulo de la señal"""
         return np.average(tension)
+    
+    def alt_Vmed(self, tiempo, tension):
+        """ retorna el valor medio de modulo de la señal"""
+        return (np.max(tension)+np.min(tension))/2
 
     def Indice_MOD(self, tiempo, tension):
         """ retorna el indice de modulacion de una señal modulada en AM"""
@@ -65,7 +69,7 @@ class Mediciones():
  
         return thd
     
-    def calculo_Capacitor(self, valor_r, tiempo, tension_r, tension_gen, modo = "TIEMPO"):
+    def calculo_Capacitor(self, valor_r, frec, tiempo, tension_r, tension_gen, metodo = "FFT"):
         '''
         Calculo de capacitor en un circuito RC por distintos metodos
         
@@ -88,7 +92,7 @@ class Mediciones():
 
         '''
         # Determino que metodo de medicion utilizo
-        if modo == "FFT": 
+        if metodo == "FFT": 
             
             # obtengo la frecuencia de muestreo
             fs=1/(tiempo[1]-tiempo[0]) 
@@ -97,7 +101,7 @@ class Mediciones():
             fcia=np.linspace(0,fs/2,len(tiempo)//2)
             
             #Aplico una ventana tipo flat top para mayor presicion
-            window = dsp.flattop(len(fcia)) # Ventana flat top
+            window = dsp.flattop(len(tension_r)) # Ventana flat top
             tension_r *= window
             tension_gen *= window
             
@@ -129,21 +133,29 @@ class Mediciones():
             xc = zt * np.sin(angle_total) 
             valor_cap = 1/(2 * np.pi * frecuencia_Señal *xc) #valor calculado
 
-        elif modo == "POT":     # Falta implementar
-            #variables
-            #valor_r, tiempo, tension_r, tension_gen
-            Vp= self.Vp(tiempo, tension_gen)
-            Ip= self.Vp(tiempo, tension_r)
+        elif metodo == "POT":
             
-            pot_aparente= Vp * Ip/ np.sqrt(2)
+            Vrms= self.Vrms(tiempo, tension_gen)
             
+            corriente= tension_r
             
+            for i in tension_r:
+                corriente= tension_r/valor_r
+            
+            Irms= self.Vrms(tiempo, corriente)
+            
+            pot_aparente= Vrms * Irms
+            pot_activa= self.Vmed(tiempo, tension_r)**2 /valor_r
+            pot_reactiva= np.sqrt(pot_aparente**2 - pot_activa**2)
+            
+            Xc= pot_reactiva/Irms**2
+            
+            valor_cap = 1/(2*np.pi*frec*Xc)
+            
+        elif metodo == "LISSAJ":  # Falta implementar
             valor_cap = 0
             pass
-        elif modo == "LISSAJ":  # Falta implementar
-            valor_cap = 0
-            pass
-        elif modo == "TIEMPO":  # Falta implementar
+        elif metodo == "TIEMPO":  # Falta implementar
             valor_cap = 0
             pass
 

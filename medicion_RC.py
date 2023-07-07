@@ -94,65 +94,11 @@ if save_data:
     np.savetxt('./saved_data/tiempo1.csv', tiempo1, delimiter=',')
     np.savetxt('./saved_data/tiempo2.csv', tiempo2, delimiter=',')
 
-valor_cap= operador_1.medir_RC(1200, metodo = "FFT")
+valor_cap= operador_1.medir_RC(1200, 1000, 1, 2, "POT")
 
-print('Valor del capacitor = %0.5f'%val_RMS)
+print('Valor del capacitor = %f'%(valor_cap*10**9),'nF')
 
 MiOsciloscopio.close()
-
-
-
-### Datos circuito
-R= 1200
-Rg= 50
-C= 220 * 10**-9 #220 nF
-f_gen= 999.917 # Medida por el osciloscopio, el generador sacaba 1kHz
-
-### Lecturas osciloscopio
-fdv= 500*10**-3
-k_punta= 1
-
-n_div_tension= 2
-n_div_corriente= 1.4
-
-vg_osc= n_div_tension * fdv * k_punta
-ig_osc= n_div_corriente * fdv * k_punta / R
-
-### |Z|= |V| / |I|
-
-z= vg_osc/ig_osc
-
-delta_N_vg= (0.1/n_div_tension) * 100
-delta_N_ig= (0.1/n_div_corriente) * 100
-delta_fbt= 0.03 * 100
-delta_punta= 0.02* 100
-delta_R= 0.1 * 100
-
-uc_vg_relativa= np.sqrt(delta_N_vg**2 + delta_fbt**2 + delta_punta**2)
-uc_ig_relativa= np.sqrt(delta_N_ig**2 + delta_fbt**2 + delta_punta**2 + delta_R**2)
-
-uc_z_relativa= np.sqrt(uc_vg_relativa**2 + uc_ig_relativa**2)
-
-print(f"Z= {round(z,2)} Ω +- {round(uc_z_relativa,2)} % @68% de confianza")
-
-### Calculo de Angulos
-
-# Formula:  delta_t= n_div_horiz * fdh
-fdh= 250 * 10**-6 #250 us/div
-delta_t= 1 * fdh
-periodo_T= 8.3 * fdh
-
-alfa= delta_t * 360 / periodo_T ## Medido en grados
-
-print(f"Fase de la impedancia: α= {round(alfa,2)}")
-
-### Reactancia capacitiva: Xc= |Z| * sen(alfa) = 1/ (2* pi *f * C)
-
-Xc= z * np.sin(alfa*np.pi/180)
-
-c_calculado= 1/(2* np.pi * f_gen * Xc)
-
-print(f"\nValor del capacitor: C= {round(c_calculado*10**9, 2)} nF")
 
 
 

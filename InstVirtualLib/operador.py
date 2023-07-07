@@ -55,7 +55,7 @@ class Operador_osciloscopio(mediciones.Mediciones):
         return self.THD(tiempo,tension)
         
     
-    def medir_RC(self, R, ch_R = 1, ch_G = 2, metodo = "TIEMPO"):
+    def medir_RC(self, R, frec, ch_R = 1, ch_G = 2, metodo = "FFT"):
         
         '''
         Parameters
@@ -77,8 +77,8 @@ class Operador_osciloscopio(mediciones.Mediciones):
         tiempo_gen,tension_gen = self.instrument.get_trace(ch_G, VERBOSE = False)
         tiempo_r,tension_r = self.instrument.get_trace(ch_R, VERBOSE = False)
         
-        return self.calculo_Capacitor(valor_r= R,tiempo= tiempo_gen,tension_r= tension_r,tension_gen= tension_gen)
-
+        #return self.calculo_Capacitor(valor_r= R,frec=frec,tiempo= tiempo_gen,tension_r= tension_r,tension_gen= tension_gen)
+        return self.calculo_Capacitor(R,frec,tiempo_gen,tension_r, tension_gen, metodo)
 
 class Operador_generador(mediciones.Mediciones):
     
