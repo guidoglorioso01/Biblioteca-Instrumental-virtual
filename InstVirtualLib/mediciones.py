@@ -69,7 +69,7 @@ class Mediciones():
  
         return thd
     
-    def calculo_Capacitor(self, valor_r, frec, tiempo, tension_r, tension_gen, metodo = "FFT"):
+    def calculo_Capacitor(self, valor_r, tiempo, tension_r, tension_gen, metodo = "FFT"):
         '''
         Calculo de capacitor en un circuito RC por distintos metodos
         
@@ -135,17 +135,34 @@ class Mediciones():
 
         elif metodo == "POT":
             
+            ########## CALCULO DE LA FRECUENCIA ###############
+            # Obtengo la frecuencia de muestreo
+            fs=1/(tiempo[1]-tiempo[0]) 
+
+            # Rango del espectro de fourier
+            fcia=np.linspace(0,fs/2,len(tiempo)//2)
+
+            #Aplico una ventana tipo flat top para mayor presicion
+            window = dsp.flattop(len(tension_gen)) # Ventana flat top
+            tension_gen *= window
+
+            # obtengo modulo de transformada de fourier de las señales en cuestion
+            fft_gen = np.abs(np.fft.fft(tension_gen))
+            fft_gen = fft_gen[0:len(fft_gen)//2] # elimino espectro repetido
+            fft_gen /= len(fcia) # desnormalizo la fft
+
+
+            posicion_max_fft_gen  = np.where(fft_gen == np.max(fft_gen))
+
+            frec = fcia[posicion_max_fft_gen[0]][0]/2 # Frecuencia del pico (de la senoidal)
+            tension_gen /= window
+            ##################################################
+            
             Vrms= self.Vrms(tiempo, tension_gen)
-            
-            corriente= tension_r
-            
-            for i in tension_r:
-                corriente= tension_r/valor_r
-            
-            Irms= self.Vrms(tiempo, corriente)
+            Irms= self.Vrms(tiempo, tension_r)/valor_r
             
             pot_aparente= Vrms * Irms
-            pot_activa= self.Vmed(tiempo, tension_r)**2 /valor_r
+            pot_activa= Irms**2 * valor_r
             pot_reactiva= np.sqrt(pot_aparente**2 - pot_activa**2)
             
             Xc= pot_reactiva/Irms**2
