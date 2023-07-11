@@ -172,15 +172,13 @@ class Mediciones():
         elif metodo == "LISSAJ":  # Falta implementar
             valor_cap = 0
             pass
-<<<<<<< HEAD
-        elif modo == "LISSAJ":  # Falta implementar
+
+        elif metodo == "LISSAJ":  # Falta implementar
             valor_cap = 0
             pass
         
-        elif modo == "TIEMPO":  # Falta implementar
-=======
         elif metodo == "TIEMPO":  # Falta implementar
->>>>>>> metodo_potencia
+
             valor_cap = 0
             pass
         
