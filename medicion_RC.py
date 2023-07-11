@@ -11,7 +11,7 @@ import pyvisa as visa
 import matplotlib.pyplot as plt
 # Agreamos el path de las librerias
 import sys
-sys.path.insert(0, 'InstVirtualLib')
+sys.path.insert(0,'InstVirtualLib')
 import platform
 # Traemos todos los osciloscopios
 from InstVirtualLib.osciloscopios import GW_Instek
@@ -34,7 +34,7 @@ OSCILOSCOPIOS = 0	# 0: GW_Instek
         			# 1: Rigol
 			        # 2: Tektronix_DSO_DPO_MSO_TDS
 
-USE_DEVICE = 0
+USE_DEVICE = 1
 
 
 
