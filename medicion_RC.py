@@ -35,7 +35,7 @@ OSCILOSCOPIOS = 0	# 0: GW_Instek
         			# 1: Rigol
 			        # 2: Tektronix_DSO_DPO_MSO_TDS
 
-USE_DEVICE = 0
+USE_DEVICE = 1
 
 # Abrimos el instrumento
 platforma = platform.platform()
@@ -67,7 +67,7 @@ tiempo2,tension2=MiOsciloscopio.get_trace("2",VERBOSE=False)
 print('-------------')
 
 # Ploteamos los canales
-fig_RC= plt.figure(1)
+fig_RC= plt.figure(2)
 ax_RC, ax_R= fig_RC.subplots(2)
 
 fig_RC.sca(ax_RC)

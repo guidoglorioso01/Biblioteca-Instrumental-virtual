@@ -154,7 +154,7 @@ class Mediciones():
 
             posicion_max_fft_gen  = np.where(fft_gen == np.max(fft_gen))
 
-            frec = fcia[posicion_max_fft_gen[0]][0]/2 # Frecuencia del pico (de la senoidal)
+            frec = fcia[posicion_max_fft_gen[0]][0] # Frecuencia del pico (de la senoidal)
             tension_gen /= window
             ##################################################
             
