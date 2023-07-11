@@ -96,9 +96,10 @@ if save_data:
     np.savetxt('./saved_data/tiempo1.csv', tiempo1, delimiter=',')
     np.savetxt('./saved_data/tiempo2.csv', tiempo2, delimiter=',')
 
-valor_cap= operador_1.medir_RC(1200, 1, 2, "TIEMPO")
+valor_cap= operador_1.medir_RC(1200, 1, 2, "POT")
 
 print('Valor del capacitor = %f'%(valor_cap*10**9),'nF')
+
 
 MiOsciloscopio.close()
 

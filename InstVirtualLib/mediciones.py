@@ -67,6 +67,27 @@ class Mediciones():
  
         return thd
     
+    def frecuencia(self, tiempo, tension):
+        fs=1/(tiempo[1]-tiempo[0]) 
+
+        # Rango del espectro de fourier
+        fcia=np.linspace(0,fs/2,len(tiempo)//2)
+
+        #Aplico una ventana tipo flat top para mayor presicion
+        window = dsp.flattop(len(tension)) # Ventana flat top
+        tension *= window
+
+        # obtengo modulo de transformada de fourier de las señales en cuestion
+        fft_gen = np.abs(np.fft.fft(tension))
+        fft_gen = fft_gen[0:len(fft_gen)//2] # elimino espectro repetido
+        fft_gen /= len(fcia) # desnormalizo la fft
+
+
+        posicion_max_fft_gen  = np.where(fft_gen == np.max(fft_gen))
+
+        frec = fcia[posicion_max_fft_gen[0]][0] # Frecuencia del pico (de la senoidal)
+        
+        return frec
     
     
     def calculo_Capacitor(self, valor_r, tiempo, tension_r, tension_gen, metodo = "FFT"):
@@ -135,29 +156,6 @@ class Mediciones():
 
         elif metodo == "POT":
             
-            ########## CALCULO DE LA FRECUENCIA ###############
-            # Obtengo la frecuencia de muestreo
-            fs=1/(tiempo[1]-tiempo[0]) 
-
-            # Rango del espectro de fourier
-            fcia=np.linspace(0,fs/2,len(tiempo)//2)
-
-            #Aplico una ventana tipo flat top para mayor presicion
-            window = dsp.flattop(len(tension_gen)) # Ventana flat top
-            tension_gen *= window
-
-            # obtengo modulo de transformada de fourier de las señales en cuestion
-            fft_gen = np.abs(np.fft.fft(tension_gen))
-            fft_gen = fft_gen[0:len(fft_gen)//2] # elimino espectro repetido
-            fft_gen /= len(fcia) # desnormalizo la fft
-
-
-            posicion_max_fft_gen  = np.where(fft_gen == np.max(fft_gen))
-
-            frec = fcia[posicion_max_fft_gen[0]][0] # Frecuencia del pico (de la senoidal)
-            tension_gen /= window
-            ##################################################
-            
             Vrms= self.Vrms(tiempo, tension_gen)
             Irms= self.Vrms(tiempo, tension_r)/valor_r
             
@@ -167,6 +165,8 @@ class Mediciones():
             
             Xc= pot_reactiva/Irms**2
             
+            frec= self.frecuencia(tiempo, tension_gen)
+            
             valor_cap = 1/(2*np.pi*frec*Xc)
 
         elif metodo == "LISSAJ":
@@ -175,12 +175,12 @@ class Mediciones():
         elif metodo == "TIEMPO": 
             Med = Mediciones()
 
-            Vpico_RC = Med.Vp(tiempo, tension_gen)
-            Vpico_R = Med.Vp(tiempo, tension_r)
+            Vpico_RC = self.Vp(tiempo, tension_gen)
+            Vpico_R = self.Vp(tiempo, tension_r)
 
             ### Datos circuito
-            f_gen = 602.85      # Frecuencia asociada al RC
-
+            # f_gen = 602.85      # Frecuencia asociada al RC
+            f_gen= self.frecuencia(tiempo, tension_gen)
             # Modulo de z
 
             Ipico_RC = Vpico_R/valor_r
@@ -208,7 +208,7 @@ class Mediciones():
 
             ### Reactancia capacitiva: Xc= |Z| * sen(alfa) = 1/ (2* pi *f * C)
 
-            Xc = z * np.sin(alfa*np.pi/180)
+            Xc = np.abs( z * np.sin(alfa*np.pi/180)) #Chequear, sin np.abs() a veces da negativo
 
             valor_cap = 1/(2* np.pi * f_gen * Xc)
 
