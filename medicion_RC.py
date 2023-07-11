@@ -11,6 +11,7 @@ import pyvisa as visa
 import matplotlib.pyplot as plt
 # Agreamos el path de las librerias
 import sys
+
 sys.path.insert(0, 'InstVirtualLib')
 ## TODO: Hay que chequear como poner bien el path a la libreria
 
@@ -36,6 +37,7 @@ OSCILOSCOPIOS = 0	# 0: GW_Instek
 			        # 2: Tektronix_DSO_DPO_MSO_TDS
 
 USE_DEVICE = 1
+
 
 # Abrimos el instrumento
 platforma = platform.platform()
@@ -94,7 +96,7 @@ if save_data:
     np.savetxt('./saved_data/tiempo1.csv', tiempo1, delimiter=',')
     np.savetxt('./saved_data/tiempo2.csv', tiempo2, delimiter=',')
 
-valor_cap= operador_1.medir_RC(1200, 1, 2, "POT")
+valor_cap= operador_1.medir_RC(1200, 1, 2, "LISSAJ")
 
 print('Valor del capacitor = %f'%(valor_cap*10**9),'nF')
 
