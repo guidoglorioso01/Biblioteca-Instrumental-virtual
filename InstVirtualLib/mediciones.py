@@ -136,7 +136,46 @@ class Mediciones():
             valor_cap = 0
             pass
         elif modo == "TIEMPO":  # Falta implementar
-            valor_cap = 0
+            
+            Med = Mediciones()
+
+            Vpico_RC = Med.Vp(tiempo, tension_gen)
+            Vpico_R = Med.Vp(tiempo, tension_r)
+
+            ### Datos circuito
+            f_gen = 602.85      # Frecuencia asociada al RC
+
+            # Modulo de z
+
+            Ipico_RC = Vpico_R/valor_r
+
+            ### |Z| = |V| / |I|
+
+            z = Vpico_RC/Ipico_RC
+
+            ### Calculo de Angulos
+
+            for i in range(0, 4000):        # Recorro todo el csv
+                aux1 = tension_gen[i]
+                if aux1 == 0:
+                    time1 = tiempo[i]
+                    
+                aux2 = tension_r[i]
+                if aux2 == 0:
+                    time2 = tiempo[i]
+
+            delta_t = time1 - time2        # Delta t entre ceros de la senoidal
+
+            periodo_T = 1/f_gen            # Periodo
+
+            alfa = delta_t * 360 / periodo_T ## Medido en grados
+
+            ### Reactancia capacitiva: Xc= |Z| * sen(alfa) = 1/ (2* pi *f * C)
+
+            Xc = z * np.sin(alfa*np.pi/180)
+
+            valor_cap = 1/(2* np.pi * f_gen * Xc)
+        
             pass
 
         return valor_cap
