@@ -54,30 +54,47 @@ class Operador_osciloscopio(mediciones.Mediciones):
 
         return self.THD(tiempo,tension)
         
-    
-    def medir_RC(self, R, ch_R = 1, ch_G = 2, metodo = "FFT"):
+    def medir_RC(self, R, canal_Vg= "1", canal_Vr= "2", metodo= "FFT", VERBOSE= False):
         
         '''
         Parameters
         ----------
         R : INT
             Valor de resistencia utilizado para medir el capacitor
-        ch_R : TYPE
-            canal utilizado para medir la tension en la R. (por defecto canal 1)
-        ch_G : TYPE
-            canal utilizado para medir la tension en el generador.(por defecto canal 2)
+        canal_Vg : TYPE
+            canal utilizado para medir la tension en el generador.(por defecto canal 1)
+        canal_Vr : TYPE
+            canal utilizado para medir la tension en la R. (por defecto canal 2)
         metodo : {TIEMPO; LISSAJ; POT; FFT} string en mayusculas
-           Metodo para calcular el capacitor. The default is "TIEMPO".
+           Metodo para calcular el capacitor. The default is "FFT".
         
         Returns
         -------
         Valor del capacitor
         
         '''
-        tiempo_gen,tension_gen = self.instrument.get_trace(ch_G, VERBOSE = False)
-        tiempo_r,tension_r = self.instrument.get_trace(ch_R, VERBOSE = False)
+        if VERBOSE:
+            print("metodo de medicion realizado por {}".format(self.operador))
+            print("con el instrumento {}".format(self.instrument.print_ID()))
         
-        return self.calculo_Capacitor(valor_r= R,tiempo= tiempo_gen,tension_r= tension_r,tension_gen= tension_gen, metodo= metodo)
+        tiempo_gen, Vg= self.instrument.get_trace(canal_Vg, VERBOSE = False)
+        tiempo_r, Vr= self.instrument.get_trace(canal_Vr, VERBOSE = False)
+        
+        if metodo == "FFT": 
+            valor_cap= self.calculo_rc_FFT(R, tiempo_gen, Vg, Vr)
+        
+        elif metodo == "POT":
+            valor_cap= self.calculo_rc_potencia(R, tiempo_gen, Vg, Vr)
+            
+        elif metodo == "LISSAJ":
+            valor_cap= self.calculo_rc_lissajous(R, tiempo_gen, Vg, Vr)
+
+        elif metodo == "TIEMPO": 
+            valor_cap= self.calculo_rc_temporal(R, tiempo_gen, Vg, Vr)
+            
+        return valor_cap
+        
+        
 
 class Operador_generador(mediciones.Mediciones):
     
