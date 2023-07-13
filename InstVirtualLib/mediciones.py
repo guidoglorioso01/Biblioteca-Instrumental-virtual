@@ -128,7 +128,7 @@ class Mediciones():
     
     def calculo_rc_FFT(self, valor_r, tiempo, tension_gen, tension_r):    
         valor_max_fft_gen, angulo_fft_gen, frec_RC= self.mod_y_fase_comp_principal_fft(tiempo, tension_gen)
-        valor_max_fft_r, angulo_fft_r, frec_R= self.mod_y_fase_comp_principal_fft(tiempo, tension_gen)
+        valor_max_fft_r, angulo_fft_r, frec_R= self.mod_y_fase_comp_principal_fft(tiempo, tension_r)
         
         itot= valor_max_fft_r/valor_r
         zt = (valor_max_fft_gen/itot) 
@@ -137,7 +137,7 @@ class Mediciones():
         angle_total = angulo_fft_r - angulo_fft_gen 
         Xc = zt * np.sin(angle_total) 
         
-        return 1/(2*np.pi *frec_RC *Xc) #valor calculado del cap
+        return 1/(2*np.pi*frec_RC*Xc) #valor calculado del cap
     
     def calculo_rc_potencia(self, valor_r, tiempo, tension_gen, tension_r):
         Vrms= self.Vrms(tiempo, tension_gen)
@@ -149,7 +149,8 @@ class Mediciones():
         
         Xc= pot_reactiva/Irms**2
         
-        frec= self.mod_y_fase_comp_principal_fft(tiempo, tension_gen)[2]
+        fft_data= self.mod_y_fase_comp_principal_fft(tiempo, tension_gen)
+        frec= fft_data[2]
         
         return 1/(2*np.pi*frec*Xc)
     
@@ -251,7 +252,8 @@ class Mediciones():
         Vpico_RC = self.Vp(tiempo, tension_gen)
         Vpico_R = self.Vp(tiempo, tension_r)
 
-        f_gen= self.frecuencia(tiempo, tension_gen)
+        fft_data= self.mod_y_fase_comp_principal_fft(tiempo, tension_gen)
+        f_gen= fft_data[2]
 
         Ipico_RC = Vpico_R/valor_r
 
